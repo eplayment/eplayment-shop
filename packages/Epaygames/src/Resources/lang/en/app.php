@@ -12,5 +12,10 @@ return [
         'cart' => [
             'payment-canceled' => 'Payment has been cancelled'
         ]
+    ],
+    'gateway' => [
+        'validation' => [
+            'invalid_signature' => 'Invalid Callback'
+        ]
     ]
 ];

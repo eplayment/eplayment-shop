@@ -15,7 +15,7 @@ class PaymentServiceProvider extends ServiceProvider
     public function boot()
     {
         // Load routes for epaygames
-        $this->loadRoutesFrom(__DIR__ . '/../Routes/api.php');
+        $this->loadRoutesFrom(__DIR__ . '/../Routes/web.php');
 
         // Load translation files
         $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'epaygames');

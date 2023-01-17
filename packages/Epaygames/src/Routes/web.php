@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['web']], function () {
     Route::prefix('epaygames')->group(function () {
-        Route::get('/success', [PaymentController::class, 'success'])->name('epaygames.success');
+        Route::get('/success/{order_id}', [PaymentController::class, 'success'])->name('epaygames.success');
         Route::get('/cancel', [PaymentController::class, 'cancel'])->name('epaygames.cancel');
     });
 });

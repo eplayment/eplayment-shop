@@ -2,7 +2,7 @@
 
 namespace Epaygames\Http\Requests;
 
-
+use Epaygames\Rules\VerifyPgiSignature;
 use Illuminate\Foundation\Http\FormRequest;
 
 class VerifyCallbackRequest extends FormRequest
@@ -24,30 +24,15 @@ class VerifyCallbackRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'data.signature' => 'required|string'
-        ];
-    }
+        $data = (object) $this->validationData()['data'];
 
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array
-     */
-    public function messages()
-    {
         return [
-           'data.signature' => 'Invalid Callback'
-        ];
-    }
-
-    /**
-     * Set the attribute name.
-     */
-    public function attributes()
-    {
-        return [
-            
+            'data.amount' => 'required|numeric',
+            'data.reference_no' => 'required|string',
+            'data.signature' => [
+                'required', 'string',
+                (new VerifyPgiSignature())->handle($data->amount, $data->reference_no)
+            ]
         ];
     }
 }

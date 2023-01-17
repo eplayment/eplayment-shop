@@ -4,6 +4,7 @@ namespace Epaygames\Http\Controllers;
 
 use Epaygames\Http\Requests\VerifyCallbackRequest;
 use Epaygames\Repositories\Payment;
+use Illuminate\Http\Request;
 use Webkul\Checkout\Facades\Cart;
 use Webkul\Sales\Repositories\OrderRepository;
 
@@ -51,9 +52,9 @@ class PaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function success()
+    public function success(Request $request)
     {
-        $order = $this->orderRepository->create(Cart::prepareDataForOrder());
+        $order = \Webkul\Sales\Models\Order::find((int) $request->order_id);
 
         Cart::deActivateCart();
 

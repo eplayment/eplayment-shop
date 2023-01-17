@@ -5,6 +5,8 @@ namespace Epaygames\Payment;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Webkul\Payment\Payment\Payment;
+use Webkul\Sales\Repositories\OrderRepository;
+use Webkul\Checkout\Facades\Cart;
 
 class Epaygames extends Payment
 {
@@ -34,6 +36,10 @@ class Epaygames extends Payment
      */
     protected static $transaction_no_length = 13;
 
+    public function __construct(protected OrderRepository $orderRepository)
+    {
+    }
+
     /**
      * Generates reference number
      * 
@@ -62,17 +68,21 @@ class Epaygames extends Payment
     protected function generatePaymentTransaction() : Object
     {
         $cart = $this->getCart();
+        $order = $this->orderRepository->create(Cart::prepareDataForOrder());
 
         $response = Http::epaygames('/biller/links/generate', [
-            'amount'                  => $cart->sub_total,
+            'amount'                  => $cart->grand_total,
             'reference_no'            => $this->generatePaymentTransactionNo(),
-            'callback_webhook_url'    => 'https://eoqqhzmy49wioid.m.pipedream.net',
-            // 'callback_webhook_url'    => route('epaygames.callback'),
-            'success_redirect_url'    => $this->getConfigData('success_url'),
+            'callback_webhook_url'    => route('epaygames.callback'),
+            'success_redirect_url'    => route('epaygames.success', ['order_id' => $order->id]),
             'failure_redirect_url'    => $this->getConfigData('failure_url'),
             'link_expires_in_minutes' => $this->link_expiration,
             'expires_in_minutes'      => ($this->link_expiration * 24)
         ]);
+
+        if (!$response->successful()) {
+            $order->delete();
+        }
 
         return $response->object();
     }
