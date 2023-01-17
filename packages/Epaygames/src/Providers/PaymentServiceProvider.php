@@ -3,6 +3,7 @@
 namespace Epaygames\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Http;
 
 class PaymentServiceProvider extends ServiceProvider
 {
@@ -13,6 +14,13 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Load routes for epaygames
+        $this->loadRoutesFrom(__DIR__ . '/../Routes/api.php');
+
+        // Load translation files
+        $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'epaygames');
+
+        $this->app->register(EventServiceProvider::class);
     }
 
     /**
@@ -23,8 +31,14 @@ class PaymentServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerConfig();
+
+        Http::macro('epaygames', function ($endpoint, $data) {
+            return Http::withToken(config('app.gateway.token'))
+                ->baseUrl(config('app.gateway.host') . '/v1')
+                ->post($endpoint, $data);
+        });
     }
-    
+
     /**
      * Register package config.
      *
@@ -38,6 +52,10 @@ class PaymentServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(
             dirname(__DIR__) . '/Config/system.php', 'core'
+        );
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__) . '/Config/app.php', 'app'
         );
     }
 }
