@@ -15,7 +15,7 @@ return [
     ], [
         'key'    => 'sales.paymentmethods.cashondelivery',
         'name'   => 'admin::app.admin.system.cash-on-delivery',
-        'sort'   => 1,
+        'sort'   => 2,
         'fields' => [
             [
                 'name'          => 'title',
@@ -104,6 +104,9 @@ return [
                     ], [
                         'title' => '4',
                         'value' => 4,
+                    ], [
+                        'title' => '5',
+                        'value' => 5,
                     ],
                 ],
             ],
@@ -111,7 +114,7 @@ return [
     ], [
         'key'    => 'sales.paymentmethods.moneytransfer',
         'name'   => 'admin::app.admin.system.money-transfer',
-        'sort'   => 2,
+        'sort'   => 4,
         'fields' => [
             [
                 'name'          => 'title',
@@ -199,6 +202,9 @@ return [
                     ], [
                         'title' => '4',
                         'value' => 4,
+                    ], [
+                        'title' => '5',
+                        'value' => 5,
                     ],
                 ],
             ],

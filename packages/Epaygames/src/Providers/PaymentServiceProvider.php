@@ -32,9 +32,9 @@ class PaymentServiceProvider extends ServiceProvider
     {
         $this->registerConfig();
 
-        Http::macro('epaygames', function ($endpoint, $data) {
-            return Http::withToken(config('app.gateway.token'))
-                ->baseUrl(config('app.gateway.host') . '/v1')
+        Http::macro('epaygames', function ($host, $token, $endpoint, $data) {
+            return Http::withToken($token)
+                ->baseUrl($host)
                 ->post($endpoint, $data);
         });
     }

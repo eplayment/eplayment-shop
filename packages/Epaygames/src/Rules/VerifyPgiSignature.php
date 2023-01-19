@@ -20,7 +20,10 @@ class VerifyPgiSignature implements Rule
 
     public function handle($amount, $reference_no)
     {
-        $this->valid_signature = hash_hmac('sha256', $amount . '@' . $reference_no, config('app.gateway.signature_key'));
+        $signature_key = core()->getConfigData('sales.paymentmethods.epaygames.sandbox') ?
+            config('app.gateway.sandbox.signature_key') : config('app.gateway.signature_key');
+
+        $this->valid_signature = hash_hmac('sha256', $amount . '@' . $reference_no, $signature_key);
 
         return $this;
     }

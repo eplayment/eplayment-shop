@@ -4,8 +4,9 @@ return [
 
     'admin' => [
         'system' => [
-            'success-url' => 'Success URL',
-            'failure-url' => 'Failure URL'            
+            'epaygames-payment' => 'Epaygames',
+            'failed-payment-url' => 'Failed Payment URL',
+            'failed-payment-info' => 'Redirect to this URL when payment failed.'
         ]
     ],
     'checkout' => [

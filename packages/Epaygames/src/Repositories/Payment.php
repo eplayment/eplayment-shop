@@ -6,6 +6,7 @@ use Epaygames\Payment\Epaygames;
 use Webkul\Sales\Repositories\OrderRepository;
 use Webkul\Sales\Repositories\InvoiceRepository;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 
 
 class Payment
@@ -43,12 +44,10 @@ class Payment
     /**
      * Extract Cart ID from the reference number.
      */
-    public function getCartId()
+    public function getOrderId()
     {
         $reference_no = explode('_', $this->post['data']['reference_no']);
-        $prefix_id = array_shift($reference_no);
-
-        return (int) Str::replace($this->payment::$transaction_no_prefix, '', $prefix_id);
+        return (int) Arr::last($reference_no);
     }
 
     /**
@@ -77,7 +76,7 @@ class Payment
     protected function getOrder()
     {
         if (empty($this->order)) {
-            $this->order = $this->orderRepository->findOneByField(['cart_id' => $this->getCartId()]);
+            $this->order = $this->orderRepository->findOneByField(['id' => $this->getOrderId()]);
         }
     }
 

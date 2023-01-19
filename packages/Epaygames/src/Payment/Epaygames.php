@@ -2,6 +2,7 @@
 
 namespace Epaygames\Payment;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Webkul\Payment\Payment\Payment;
@@ -15,7 +16,7 @@ class Epaygames extends Payment
      *
      * @var string
      */
-    protected $code  = 'epaygames';
+    protected $code = 'epaygames';
 
     /**
      * Link expiration in minutes
@@ -36,8 +37,23 @@ class Epaygames extends Payment
      */
     protected static $transaction_no_length = 13;
 
+    /**
+     * Epaygames payment API configuration
+     */
+    protected $payment_config;
+
     public function __construct(protected OrderRepository $orderRepository)
     {
+        $this->payment_config = ($this->getConfigData('sandbox'))
+            ? [
+                'host'  => config('app.gateway.sandbox.host'),
+                'token' => config('app.gateway.sandbox.token')
+            ]
+            :
+            [
+                'host'  => config('app.gateway.host'),
+                'token' => config('app.gateway.token')
+            ];
     }
 
     /**
@@ -45,17 +61,9 @@ class Epaygames extends Payment
      * 
      * @return string
      */
-    protected function generatePaymentTransactionNo() : String
+    protected function generatePaymentTransactionNo($order_id) : String
     {
-        $cart = $this->getCart();
-
-        $id_to_arbitrary_base = base_convert(($cart->id ?? 0) + 1, 10, 36);
-
-        return Str::upper(
-            self::$transaction_no_prefix . $cart->id . '_'. strrev($id_to_arbitrary_base . Str::substr(Str::random(
-                    self::$transaction_no_length
-                ), Str::length($id_to_arbitrary_base)))
-            );
+        return self::$transaction_no_prefix . Str::upper(Str::random(self::$transaction_no_length)) . '_' . $order_id;
     }
 
     public function getRedirectUrl() : String
@@ -67,18 +75,20 @@ class Epaygames extends Payment
 
     protected function generatePaymentTransaction() : Object
     {
-        $cart = $this->getCart();
+        $cart  = $this->getCart();
         $order = $this->orderRepository->create(Cart::prepareDataForOrder());
 
-        $response = Http::epaygames('/biller/links/generate', [
-            'amount'                  => $cart->grand_total,
-            'reference_no'            => $this->generatePaymentTransactionNo(),
-            'callback_webhook_url'    => route('epaygames.callback'),
-            'success_redirect_url'    => route('epaygames.success', ['order_id' => $order->id]),
-            'failure_redirect_url'    => $this->getConfigData('failure_url'),
-            'link_expires_in_minutes' => $this->link_expiration,
-            'expires_in_minutes'      => ($this->link_expiration * 24)
-        ]);
+        $response = Http::epaygames(
+            $this->payment_config['host'], $this->payment_config['token'],
+            '/biller/links/generate', [
+                'amount'                  => $cart->grand_total,
+                'reference_no'            => $this->generatePaymentTransactionNo($order->id),
+                'callback_webhook_url'    => route('epaygames.callback'),
+                'success_redirect_url'    => route('epaygames.success', ['order_id' => $order->id]),
+                'failure_redirect_url'    => $this->getConfigData('failed_payment_url'),
+                'link_expires_in_minutes' => $this->link_expiration,
+                'expires_in_minutes'      => ($this->link_expiration * 24)
+            ]);
 
         if (!$response->successful()) {
             $order->delete();
