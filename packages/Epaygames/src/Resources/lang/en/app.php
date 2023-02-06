@@ -6,7 +6,9 @@ return [
         'system' => [
             'epaygames-payment' => 'Epaygames',
             'failed-payment-url' => 'Failed Payment URL',
-            'failed-payment-info' => 'Redirect to this URL when payment failed.'
+            'failed-payment-info' => 'Redirect to this URL when payment failed.',
+            'success-payment-url' => 'Success Payment URL',
+            'success-payment-info' => 'Redirect to this URL when payment is successful.',
         ]
     ],
     'checkout' => [

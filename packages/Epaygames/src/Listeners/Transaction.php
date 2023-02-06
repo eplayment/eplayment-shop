@@ -27,9 +27,10 @@ class Transaction
     */
     public function saveTransaction($invoice) {
         $request = request()->all();
-        $data = $request['data'];
 
         if ($invoice->order->payment->method == 'epaygames') {
+            $data = $request['data'];
+
             $this->orderTransactionRepository->create([
                 'transaction_id' => $data['reference_no'],
                 'status'         => $data['status'],
@@ -37,6 +38,7 @@ class Transaction
                 'payment_method' => $invoice->order->payment->method,
                 'order_id'       => $invoice->order->id,
                 'invoice_id'     => $invoice->id,
+                'amount'         => $data['total_amount'],
                 'data'           => json_encode($data),
             ]);
         }

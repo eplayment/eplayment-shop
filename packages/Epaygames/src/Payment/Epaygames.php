@@ -84,7 +84,7 @@ class Epaygames extends Payment
                 'amount'                  => $cart->grand_total,
                 'reference_no'            => $this->generatePaymentTransactionNo($order->id),
                 'callback_webhook_url'    => route('epaygames.callback'),
-                'success_redirect_url'    => route('epaygames.success', ['order_id' => $order->id]),
+                'success_redirect_url'    => $this->getConfigData('success_payment_url'),
                 'failure_redirect_url'    => $this->getConfigData('failed_payment_url'),
                 'link_expires_in_minutes' => $this->link_expiration,
                 'expires_in_minutes'      => ($this->link_expiration * 24)

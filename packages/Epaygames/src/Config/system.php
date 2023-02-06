@@ -33,6 +33,16 @@ return [
                 'locale_based'  => false,
             ],
             [
+                'name'          => 'success_payment_url',
+                'info'          => 'epaygames::app.admin.system.success-payment-info',
+                'title'         => 'epaygames::app.admin.system.success-payment-url',
+                'type'          => 'depends',
+                'depend'        => 'active:1',
+                'validation'    => 'required_if:active,1',
+                'channel_based' => true,
+                'locale_based'  => false,
+            ],
+            [
                 'name'          => 'active',
                 'title'         => 'admin::app.admin.system.status',
                 'type'          => 'boolean',

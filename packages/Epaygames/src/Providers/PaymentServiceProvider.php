@@ -16,6 +16,8 @@ class PaymentServiceProvider extends ServiceProvider
     {
         // Load routes for epaygames
         $this->loadRoutesFrom(__DIR__ . '/../Routes/web.php');
+        // Load alternative api routes for bagisto-api
+        $this->loadRoutesFrom(__DIR__ . '/../Routes/api.php');
 
         // Load translation files
         $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'epaygames');
